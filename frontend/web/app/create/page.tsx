@@ -202,28 +202,27 @@ export default function CreateBillPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
         {/* Header */}
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Grid3X3 className="h-5 w-5 text-white" />
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-2xl">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                  <PlusCircle className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Merchant Dashboard
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Manage your payment bills with ease</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Create Payment Bill</h1>
+                  <p className="text-gray-600">Generate a secure payment request</p>
                 </div>
               </div>
-              <Button 
-                onClick={() => setIsDashboard(false)} 
-                size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" /> Create New Bill
-              </Button>
+              <p className="text-sm text-muted-foreground">Manage your payment bills with ease</p>
             </div>
           </div>
+          <Button 
+            onClick={() => setIsDashboard(false)} 
+            size="lg" 
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" /> Create New Bill
+          </Button>
         </div>
 
         <div className="container mx-auto px-4 py-8">
@@ -394,17 +393,22 @@ export default function CreateBillPage() {
   // Show success state
   if (paymentUrl && billId) {
     return (
-      <div className="container mx-auto px-4 py-8 safe-top safe-bottom">
-        <div className="max-w-2xl mx-auto animate-fade-in">
-          <div className="text-center mb-8">
-            <div className="h-16 w-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+        <div className="container mx-auto px-4 py-8 safe-top safe-bottom">
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="h-16 w-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-8 w-8 text-green-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Bill Created!</h1>
+              <p className="text-gray-600">Share this secure payment link with your customer</p>
             </div>
-            <h1 className="text-3xl font-bold mb-2 text-green-600">Bill Created Successfully!</h1>
-            <p className="text-muted-foreground text-responsive">
-              Your payment request is ready to be shared.
-            </p>
-          </div>
 
           <Card className="p-6 mb-6 card-hover glass">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -532,27 +536,52 @@ export default function CreateBillPage() {
               </p>
             </Card>
           </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 safe-top safe-bottom relative">
-      <div className="pointer-events-none select-none absolute -z-10 inset-0 opacity-40">
-        <div className="absolute -right-10 top-20 hidden md:block">
-          <img src="/payment.svg" alt="payment" className="w-56 h-56 float-animation opacity-70" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
-      <div className="max-w-2xl mx-auto animate-fade-in">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2 gradient-primary bg-clip-text text-transparent">
-            Create Payment Bill
-          </h1>
-          <p className="text-muted-foreground text-responsive">
-            Generate a payment request that can be paid with zero gas fees.
-          </p>
-        </div>
+      
+      <div className="container mx-auto px-4 py-8 safe-top safe-bottom relative">
+        <div className="max-w-2xl mx-auto animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-2xl">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                  <PlusCircle className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Create Payment Bill</h1>
+                  <p className="text-gray-600">Generate a secure payment request</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => setIsDashboard(!isDashboard)}
+                variant="outline"
+                className="border-gray-300 hover:border-green-500 bg-white hover:bg-green-50 text-gray-700 hover:text-green-700"
+              >
+                {isDashboard ? (
+                  <>
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Create New
+                  </>
+                ) : (
+                  <>
+                    <Grid3X3 className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </>
+                )}
+              </Button>
+            </div>
 
         {/* ✅ Network Alert - Show warning if wrong network */}
         {shouldShowAlert && (
@@ -684,12 +713,14 @@ export default function CreateBillPage() {
             </p>
           </Card>
           <Card className="p-4 card-hover">
-            <Shield className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+            <Shield className="h-8 w-8 text-green-500 mx-auto mb-2" />
             <h3 className="font-semibold text-sm">Network Protected</h3>
             <p className="text-xs text-muted-foreground">
               Auto-validated on Mantle L2
             </p>
           </Card>
+        </div>
+          </div>
         </div>
       </div>
     </div>

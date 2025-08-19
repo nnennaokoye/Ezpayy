@@ -14,24 +14,24 @@ export default function HowItWorks() {
       title: "Create Bill",
       description: "Set amount, token, and recipient address to generate a payment request",
       details: "Simply enter the payment details and our smart contract will generate a unique bill ID",
-      color: "from-purple-400 to-pink-500",
-      bgColor: "bg-purple-500/10"
+      color: "from-green-500 to-emerald-500",
+      bgColor: "bg-green-500/10"
     },
     {
       icon: QrCode,
       title: "Share QR Code",
       description: "Share the generated QR code or payment link with the payer",
       details: "Recipients can scan the QR code with any device or use the shareable payment link",
-      color: "from-blue-400 to-purple-500",
-      bgColor: "bg-blue-500/10"
+      color: "from-green-600 to-green-400",
+      bgColor: "bg-green-600/10"
     },
     {
       icon: CheckCircle,
       title: "Instant Payment",
       description: "Payer scans QR and pays instantly with zero gas fees",
       details: "Payments are processed instantly on Mantle L2 with no gas fees for the payer",
-      color: "from-pink-400 to-purple-500",
-      bgColor: "bg-pink-500/10"
+      color: "from-emerald-500 to-green-500",
+      bgColor: "bg-emerald-500/10"
     }
   ];
 
@@ -43,33 +43,33 @@ export default function HowItWorks() {
         min-h-screen snap-start relative overflow-hidden
         flex flex-col items-center justify-center
         px-4 py-8 sm:py-16
-        bg-gradient-to-br from-[#1a1b3a] via-[#2d1b69] to-[#4c1d95]
+        bg-gradient-to-br from-gray-50 to-white
         transition-all duration-1000 ease-out delay-300
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
       `}
     >
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-64 md:w-96 h-48 sm:h-64 md:h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-64 md:w-96 h-48 sm:h-64 md:h-96 bg-gradient-to-r from-green-400/10 to-green-600/10 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-20 px-2 sm:px-4">
-          <div className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4 lg:mb-6">
-            <Play className="w-3 lg:w-4 h-3 lg:h-4 text-purple-300" />
-            <span className="text-xs lg:text-sm font-semibold text-white">How It Works</span>
+          <div className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 bg-green-100 backdrop-blur-sm rounded-full border border-green-200 mb-4 lg:mb-6">
+            <Play className="w-3 lg:w-4 h-3 lg:h-4 text-green-600" />
+            <span className="text-xs lg:text-sm font-semibold text-green-800">How It Works</span>
           </div>
           
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 lg:mb-6 tracking-tight text-white">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 lg:mb-6 tracking-tight text-gray-900">
             Simple as{' '}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-green-600 via-green-500 to-emerald-500 bg-clip-text text-transparent">
               1-2-3
             </span>
           </h2>
           
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed">
             Get started with Ezpay in just three simple steps. No complex setup required.
           </p>
         </div>
@@ -96,9 +96,9 @@ export default function HowItWorks() {
               )}
 
               {/* Step Card */}
-              <div className={`relative p-6 lg:p-8 h-full bg-white/5 backdrop-blur-sm border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-3xl`}>
+              <div className={`relative p-6 lg:p-8 h-full bg-white/90 backdrop-blur-sm border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-3xl`}>
                 {/* Step Number */}
-                <div className="absolute -top-3 lg:-top-4 -left-3 lg:-left-4 w-10 lg:w-12 h-10 lg:h-12 rounded-2xl bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center shadow-xl">
+                <div className="absolute -top-3 lg:-top-4 -left-3 lg:-left-4 w-10 lg:w-12 h-10 lg:h-12 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-xl">
                   <span className="text-white font-bold text-lg lg:text-xl">{index + 1}</span>
                 </div>
 
@@ -111,13 +111,13 @@ export default function HowItWorks() {
                   `}>
                     <step.icon className={`
                       h-8 lg:h-10 w-8 lg:w-10 transition-colors duration-300
-                      ${activeStep === index ? 'text-purple-400' : 'text-gray-400'}
+                      ${activeStep === index ? 'text-green-600' : 'text-gray-500'}
                     `} />
                   </div>
                   
                   {/* Pulse Animation */}
                   {activeStep === index && (
-                    <div className="absolute inset-0 w-16 lg:w-20 h-16 lg:h-20 rounded-2xl bg-purple-400/20 animate-ping"></div>
+                    <div className="absolute inset-0 w-16 lg:w-20 h-16 lg:h-20 rounded-2xl bg-green-500/20 animate-ping"></div>
                   )}
                 </div>
 
@@ -125,12 +125,12 @@ export default function HowItWorks() {
                 <div className="space-y-3 lg:space-y-4">
                   <h3 className={`
                     text-xl lg:text-2xl xl:text-3xl font-bold transition-colors duration-300
-                    ${activeStep === index ? 'text-purple-300' : 'text-white'}
+                    ${activeStep === index ? 'text-green-600' : 'text-gray-900'}
                   `}>
                     {step.title}
                   </h3>
                   
-                  <p className="text-gray-300 text-base lg:text-lg leading-relaxed">
+                  <p className="text-gray-600 text-base lg:text-lg leading-relaxed">
                     {step.description}
                   </p>
 
@@ -139,8 +139,8 @@ export default function HowItWorks() {
                     overflow-hidden transition-all duration-500 ease-out
                     ${activeStep === index ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}
                   `}>
-                    <div className="pt-4 border-t border-purple-400/20">
-                      <p className="text-sm text-purple-300 font-medium">
+                    <div className="pt-4 border-t border-green-200">
+                      <p className="text-sm text-green-700 font-medium">
                         {step.details}
                       </p>
                     </div>
@@ -152,7 +152,7 @@ export default function HowItWorks() {
                   absolute bottom-6 right-6 transition-all duration-300
                   ${activeStep === index ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'}
                 `}>
-                  <ArrowRight className="w-5 h-5 text-purple-400" />
+                  <ArrowRight className="w-5 h-5 text-green-600" />
                 </div>
               </div>
             </div>
@@ -167,14 +167,14 @@ export default function HowItWorks() {
                 <div 
                   className={`
                     w-3 h-3 rounded-full transition-all duration-300 cursor-pointer
-                    ${activeStep === index ? 'bg-purple-400 scale-125' : 'bg-gray-500/30 hover:bg-purple-400/50'}
+                    ${activeStep === index ? 'bg-green-500 scale-125' : 'bg-gray-300 hover:bg-green-400/50'}
                   `}
                   onClick={() => setActiveStep(index)}
                 />
                 {index < steps.length - 1 && (
                   <div className="w-12 h-0.5 bg-gray-500/20 mx-2">
                     <div className={`
-                      h-full bg-purple-400 transition-all duration-500 transform origin-left
+                      h-full bg-green-500 transition-all duration-500 transform origin-left
                       ${activeStep > index ? 'scale-x-100' : 'scale-x-0'}
                     `}></div>
                   </div>
@@ -186,12 +186,12 @@ export default function HowItWorks() {
 
         {/* Call to Action */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-6 px-8 py-6 bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
+          <div className="inline-flex items-center gap-6 px-8 py-6 bg-green-50 backdrop-blur-sm rounded-3xl border border-green-200 shadow-xl">
             <div className="text-center">
-              <div className="text-sm text-gray-300 mb-1">Ready to start?</div>
-              <div className="font-semibold text-lg text-white">Create your first bill now</div>
+              <div className="text-sm text-gray-600 mb-1">Ready to start?</div>
+              <div className="font-semibold text-lg text-gray-900">Create your first bill now</div>
             </div>
-            <ArrowRight className="w-6 h-6 text-purple-400 animate-pulse" />
+            <ArrowRight className="w-6 h-6 text-green-600 animate-pulse" />
           </div>
         </div>
       </div>

@@ -215,9 +215,18 @@ export default function PaymentPage() {
   // ✅ NETWORK ALERT: Gasless payment handler with network validation
   const handleGaslessPayment = async () => {
     if (!billData || !contractAddress || !address || !isConnected) return;
+    
+    // Handle approval automatically if needed
     if (token && needsApproval) {
-      toast.error('Please approve the token first.');
-      return;
+      toast.loading('Approval required for gasless payment...', { duration: 2000 });
+      try {
+        await handleApproveToken();
+        // Wait a bit for approval to be confirmed
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (error) {
+        toast.error('Approval failed. Please try manual approval.');
+        return;
+      }
     }
     // Ensure target contract has gasless support endpoints (getNonce or nonces mapping)
     let supportsGasless = true;
@@ -571,60 +580,68 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 safe-top safe-bottom relative">
-      <div className="pointer-events-none select-none absolute -z-10 inset-0 opacity-25">
-        <div className="absolute right-0 top-24 hidden md:block">
-          <img src="/payment.svg" alt="payment" className="w-40 h-40 float-animation" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
-      <div className="max-w-2xl mx-auto animate-fade-in">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2 gradient-primary bg-clip-text text-transparent">
-            Payment Request
-          </h1>
-          <p className="text-muted-foreground text-responsive">
-            Review the details and complete the payment.
-          </p>
-          <div className="mt-4 flex justify-center">
-            <NetworkBadge />
-          </div>
-        </div>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 safe-top safe-bottom relative">
+        <div className="max-w-2xl mx-auto animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-2xl">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Wallet className="h-8 w-8 text-green-600" />
+              </div>
+              <h1 className="text-3xl font-bold mb-2 text-gray-900">
+                Payment Request
+              </h1>
+              <p className="text-gray-600">
+                Review the details and complete the payment.
+              </p>
+              <div className="mt-4 flex justify-center">
+                <NetworkBadge />
+              </div>
+            </div>
 
-        {/* ✅ Network Alert - Show warning if wrong network with auto-attempt info */}
-        {shouldShowAlert && (
-          <div className="mb-6">
-            <NetworkAlert showButton={true} />
-            {hasAutoSwitched && (
-              <div className="mt-2 text-xs text-orange-600 dark:text-orange-400 text-center">
-                Auto-switch attempted. Please manually switch if needed.
+            {/* ✅ Network Alert - Show warning if wrong network with auto-attempt info */}
+            {shouldShowAlert && (
+              <div className="mb-6">
+                <NetworkAlert showButton={true} />
+                {hasAutoSwitched && (
+                  <div className="mt-2 text-xs text-orange-600 dark:text-orange-400 text-center">
+                    Auto-switch attempted. Please manually switch if needed.
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Bill Status Badge */}
-        <div className="flex justify-center mb-6">
-          {billData.paid ? (
-            <div className="status-success px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Paid
+            {/* Bill Status Badge */}
+            <div className="flex justify-center mb-6">
+              {billData.paid ? (
+                <div className="status-success px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Paid
+                </div>
+              ) : (
+                <div className="status-warning px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Pending Payment
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="status-warning px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Pending Payment
-            </div>
-          )}
-        </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {/* Bill Details */}
-          <Card className="p-6 card-hover glass">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-blue-500" />
-              Bill Details
-            </h2>
-            <div className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Bill Details */}
+              <Card className="p-6 card-hover glass">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-green-500" />
+                  Bill Details
+                </h2>
+                <div className="space-y-4">
               <div>
                 <label className="text-sm text-muted-foreground font-medium">Bill ID</label>
                 <div className="flex items-center gap-2 mt-1">
@@ -654,8 +671,8 @@ export default function PaymentPage() {
             </div>
           </Card>
 
-          {/* Payment Info */}
-          <Card className="p-6 card-hover glass">
+              {/* Payment Actions */}
+              <Card className="p-6 card-hover glass">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <Wallet className="h-5 w-5 text-green-500" />
               Payment Information
@@ -757,34 +774,18 @@ export default function PaymentPage() {
                 </div>
               )}
 
-              {/* Approval Required Notice for Gasless ERC20 */}
+              {/* Approval Info for Gasless ERC20 */}
               {paymentMethod === 'gasless' && token && needsApproval && (
-                <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5" />
+                    <Zap className="h-4 w-4 text-blue-600 mt-0.5" />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                        Token Approval Required
+                      <div className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        Smart Gasless Payment
                       </div>
-                      <div className="text-xs text-orange-700 dark:text-orange-300 mt-1">
-                        First approve {symbolForDisplay} spending, then proceed with gasless payment.
+                      <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        We'll handle {symbolForDisplay} approval automatically during gasless payment. Zero gas fees for you!
                       </div>
-                      <Button
-                        onClick={handleApproveToken}
-                        disabled={isApprovePending}
-                        size="sm"
-                        className="mt-2"
-                        variant="outline"
-                      >
-                        {isApprovePending ? (
-                          <>
-                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-1"></div>
-                            Approving...
-                          </>
-                        ) : (
-                          `Approve ${symbolForDisplay}`
-                        )}
-                      </Button>
                     </div>
                   </div>
                 </div>
@@ -794,7 +795,7 @@ export default function PaymentPage() {
               {walletConnected && canProceed ? (
                 <Button
                   onClick={paymentMethod === 'gasless' ? handleGaslessPayment : handleNormalPayment}
-                  disabled={!canPay || (isPending ?? false) || (isConfirming ?? false) || isGaslessProcessing || (paymentMethod === 'gasless' && token && needsApproval)}
+                  disabled={!canPay || (isPending ?? false) || (isConfirming ?? false) || isGaslessProcessing}
                   className="w-full tap-target btn-animate"
                   size="lg"
                   variant={canPay ? "default" : "secondary"}
@@ -871,12 +872,14 @@ export default function PaymentPage() {
             </p>
           </Card>
           <Card className="p-4 card-hover">
-            <CheckCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+            <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
             <h3 className="font-semibold text-sm">Instant Settlement</h3>
             <p className="text-xs text-muted-foreground">
               Immediate payment confirmation
             </p>
           </Card>
+        </div>
+          </div>
         </div>
       </div>
     </div>

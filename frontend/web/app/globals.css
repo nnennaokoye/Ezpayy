@@ -4,44 +4,45 @@
 
 @layer base {
   :root {
-    /* Dark Theme Base - Matching Reference Image */
-    --background: 230 35% 7%; /* Deep dark blue */
-    --foreground: 0 0% 98%;
-    --card: 230 35% 9%;
-    --card-foreground: 0 0% 95%;
-    --popover: 230 35% 9%;
-    --popover-foreground: 0 0% 95%;
+    /* HederaPay Light Theme - Clean Green & White */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 0 0% 9%; /* Dark text */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
     
-    /* Modern Dark Purple-Blue Theme */
-    --primary: 258 90% 66%; /* Vibrant purple-blue */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 230 35% 15%; /* Dark blue secondary */
-    --secondary-foreground: 0 0% 90%;
+    /* HederaPay Green Theme - Based on image analysis */
+    --primary: 158 64% 52%; /* HederaPay main green #22C55E */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%; /* Very light gray */
+    --secondary-foreground: 0 0% 9%;
     
-    --muted: 230 35% 12%;
-    --muted-foreground: 230 15% 65%;
-    --accent: 280 100% 70%; /* Bright purple accent */
-    --accent-foreground: 0 0% 98%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 158 64% 52%; /* Same as primary green */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 230 35% 18%;
-    --input: 230 35% 15%;
-    --ring: 258 90% 66%;
-    --radius: 1rem;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 158 64% 52%;
+    --radius: 0.75rem;
+    
+    /* HederaPay Color Palette */
+    --hedera-green: 158 64% 52%; /* #22C55E - Main brand green */
+    --hedera-green-dark: 158 64% 42%; /* #16A34A - Darker green for hover */
+    --hedera-green-light: 158 64% 62%; /* #4ADE80 - Lighter green */
+    --hedera-gray: 215 16% 47%; /* #6B7280 - Text gray */
+    --hedera-gray-light: 220 14% 96%; /* #F9FAFB - Background gray */
     
     /* Success/Warning/Info Colors */
-    --success: 142 76% 45%;
-    --success-foreground: 0 0% 98%;
-    --warning: 38 92% 60%;
-    --warning-foreground: 0 0% 98%;
-    --info: 258 90% 66%;
-    --info-foreground: 0 0% 98%;
-    
-    /* Dark Gradient Variables - Matching Reference */
-    --gradient-dark-start: 230 35% 7%; /* Deep navy */
-    --gradient-dark-middle: 245 60% 25%; /* Purple-blue */
-    --gradient-dark-end: 258 90% 66%; /* Bright purple */
-    --gradient-accent: 280 100% 70%; /* Bright purple accent */
+    --success: 158 64% 52%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 100%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
     
     /* Animation Variables */
     --animation-speed-fast: 150ms;
@@ -51,37 +52,29 @@
   }
 
   .dark {
-    /* Enhanced Dark Mode - Even Darker */
-    --background: 230 40% 4%;
+    /* HederaPay Dark Mode - Keep the green theme */
+    --background: 0 0% 9%;
     --foreground: 0 0% 98%;
-    --card: 230 40% 6%;
+    --card: 0 0% 11%;
     --card-foreground: 0 0% 95%;
-    --popover: 230 40% 6%;
+    --popover: 0 0% 11%;
     --popover-foreground: 0 0% 95%;
     
-    /* Enhanced Dark Purple-Blue */
-    --primary: 258 95% 70%;
-    --primary-foreground: 230 40% 4%;
-    --secondary: 230 40% 12%;
+    /* Keep HederaPay green in dark mode */
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 90%;
     
-    --muted: 230 40% 10%;
-    --muted-foreground: 230 20% 70%;
-    --accent: 280 100% 75%;
-    --accent-foreground: 230 40% 4%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 65%;
     --destructive-foreground: 0 0% 98%;
-    --border: 230 40% 15%;
-    --input: 230 40% 12%;
-    --ring: 258 95% 70%;
-    
-    /* Enhanced Success/Warning/Info Colors */
-    --success: 142 76% 50%;
-    --success-foreground: 230 40% 4%;
-    --warning: 38 92% 65%;
-    --warning-foreground: 230 40% 4%;
-    --info: 258 95% 70%;
-    --info-foreground: 230 40% 4%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 158 64% 52%;
   }
 }
 
@@ -105,9 +98,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* Dark gradient background matching reference */
-    background: linear-gradient(135deg, hsl(var(--gradient-dark-start)) 0%, hsl(var(--gradient-dark-middle)) 50%, hsl(var(--gradient-dark-end)) 100%);
-    background-attachment: fixed;
+    /* Clean HederaPay background - light gray */
+    background: hsl(var(--hedera-gray-light));
   }
   
   /* Focus styles */
@@ -126,27 +118,24 @@
 }
 
 @layer components {
-  /* Dark Payment Layout - Matching Reference Image */
+  /* HederaPay Clean Layout */
   .payment-layout {
     display: flex;
     min-height: 100vh;
-    background: linear-gradient(135deg, hsl(var(--gradient-dark-start)) 0%, hsl(var(--gradient-dark-middle)) 50%, hsl(var(--gradient-dark-end)) 100%);
+    background: hsl(var(--background));
   }
 
   .content-section {
     flex: 1;
-    background: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay */
-    backdrop-filter: blur(10px);
+    background: hsl(var(--background));
     padding: 60px 40px;
   }
 
   .gradient-section {
     flex: 1;
     background: linear-gradient(135deg, 
-      hsl(var(--gradient-dark-start)) 0%, 
-      hsl(var(--gradient-dark-middle)) 30%, 
-      hsl(var(--gradient-dark-end)) 70%, 
-      hsl(var(--gradient-accent)) 100%
+      hsl(var(--hedera-green)) 0%, 
+      hsl(var(--hedera-green-light)) 100%
     );
     position: relative;
   }
@@ -155,27 +144,23 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(168, 85, 247, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.3) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
   }
 
-  /* Dark Gradient Variants */
-  .payment-gradient-split {
-    background: linear-gradient(90deg, 
-      rgba(0, 0, 0, 0.3) 0%, 
-      rgba(0, 0, 0, 0.3) 50%, 
-      hsl(var(--gradient-dark-middle)) 50%, 
-      hsl(var(--gradient-dark-end)) 75%, 
-      hsl(var(--gradient-accent)) 100%
+  /* HederaPay Gradient Variants */
+  .hedera-gradient {
+    background: linear-gradient(135deg, 
+      hsl(var(--hedera-green)) 0%, 
+      hsl(var(--hedera-green-light)) 100%
     );
   }
 
-  .payment-gradient-complex {
-    background: 
-      linear-gradient(135deg, hsl(var(--gradient-dark-start)) 0%, transparent 70%),
-      radial-gradient(ellipse at top right, hsl(var(--gradient-accent)) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom left, hsl(var(--gradient-dark-end)) 0%, transparent 50%),
-      linear-gradient(45deg, hsl(var(--gradient-dark-middle)) 0%, hsl(var(--gradient-dark-start)) 100%);
+  .hedera-gradient-subtle {
+    background: linear-gradient(135deg, 
+      hsl(var(--hedera-gray-light)) 0%, 
+      hsl(var(--background)) 100%
+    );
   }
 
   /* Responsive tweaks for split layout */
