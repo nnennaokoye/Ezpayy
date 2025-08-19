@@ -15,7 +15,7 @@ module.exports = {
     },
   },
   networks: {
-    mantleTestnet: {
+    mantleSepoliaTestnet: {
       url: "https://rpc.sepolia.mantle.xyz",
       chainId: 5003,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
@@ -35,12 +35,12 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      mantleTestnet: "anything",
+      mantleSepoliaTestnet: "anything",
       mantleMainnet: "anything",
     },
     customChains: [
       {
-        network: "mantleTestnet",
+        network: "mantleSepoliaTestnet",
         chainId: 5003,
         urls: {
           apiURL: "https://explorer.sepolia.mantle.xyz/api",
