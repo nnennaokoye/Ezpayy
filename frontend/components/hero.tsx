@@ -22,9 +22,7 @@ export function Hero() {
           </h1>
 
           <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
-            EzPay revolutionizes crypto payments with gasless transactions on Mantle network. Scan, pay, done - no
-            wallet setup, no gas fees, just seamless payments in MNT, USDC, and WETH.
-          </p>
+          EzPay makes crypto payments seamless with gasless transactions on the Mantle network. Simply scan and pay in MNT, USDC, USDT or WETH — no hassle, no gas.          </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/pay">
