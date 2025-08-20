@@ -4,6 +4,19 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+/// @dev Minimal ERC20 Permit interface (EIP-2612)
+interface IERC20Permit {
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+}
+
 /**
  * @title Ezpay
  * @dev Smart contract for creating and paying bills via payment links
@@ -21,6 +34,68 @@ contract Ezpay is ReentrancyGuard {
         address payer;
     }
 
+    /**
+     * @dev Pay dynamically in ETH/MNT using a merchant-signed authorization.
+     * Merchant signs (receiver, token, chainId, contractAddress).
+     * Amount is provided by payer as msg.value (reusable QR without fixed amount).
+     * Payer pays gas. Anyone can submit.
+     */
+    function payDynamicETH(PayAuthorization calldata auth) external payable nonReentrant {
+        // Validate merchant authorization
+        if (!_verifyPayAuthorization(auth)) {
+            revert InvalidAuthorization();
+        }
+
+        // token must be native (address(0)) for ETH flow
+        require(auth.token == address(0), "Invalid token for ETH");
+        require(msg.value > 0, "No ETH sent");
+
+        (bool success, ) = payable(auth.receiver).call{value: msg.value}("");
+        if (!success) {
+            revert TransferFailed();
+        }
+
+        emit DynamicEthPaid(auth.receiver, msg.sender, msg.value, block.timestamp);
+    }
+
+    /**
+     * @dev Pay dynamically in ERC20 using merchant auth + payer EIP-2612 permit.
+     * Merchant signs (receiver, token, chainId, contractAddress).
+     * Payer provides a permit for exact amount; any sender can relay this tx (sponsored gas).
+     */
+    function payDynamicERC20WithPermit(
+        PayAuthorization calldata auth,
+        PermitData calldata permit
+    ) external nonReentrant {
+        if (!_verifyPayAuthorization(auth)) {
+            revert InvalidAuthorization();
+        }
+        require(auth.token != address(0), "Invalid token for ERC20");
+        require(auth.token == permit.token, "Token mismatch");
+        require(permit.owner != address(0), "Invalid owner");
+        require(permit.value > 0, "Invalid amount");
+
+        // Execute permit to approve this contract to pull funds
+        IERC20Permit(permit.token).permit(
+            permit.owner,
+            address(this),
+            permit.value,
+            permit.deadline,
+            permit.v,
+            permit.r,
+            permit.s
+        );
+
+        // Pull funds from payer to merchant (receiver)
+        IERC20 token = IERC20(permit.token);
+        bool success = token.transferFrom(permit.owner, auth.receiver, permit.value);
+        if (!success) {
+            revert TransferFailed();
+        }
+
+        emit DynamicErc20Paid(auth.receiver, permit.owner, permit.token, permit.value, block.timestamp);
+    }
+
     struct Authorization {
         address authorizer;
         bytes32 billId;
@@ -28,6 +103,26 @@ contract Ezpay is ReentrancyGuard {
         uint256 chainId;
         address contractAddress;
         bytes signature;
+    }
+
+    // Merchant-signed authorization for dynamic payments (no stored bill)
+    struct PayAuthorization {
+        address receiver;         // Merchant address (intended receiver)
+        address token;            // address(0) for ETH, ERC20 address otherwise
+        uint256 chainId;          // Target chain id
+        address contractAddress;  // This contract address
+        bytes signature;          // Signature by receiver (merchant)
+    }
+
+    // EIP-2612 permit data for payer approval
+    struct PermitData {
+        address owner;      // Payer
+        address token;      // ERC20 token address
+        uint256 value;      // Amount to approve/pay
+        uint256 deadline;   // Permit deadline
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
     }
 
     mapping(bytes32 => Bill) public bills;
@@ -50,6 +145,22 @@ contract Ezpay is ReentrancyGuard {
         address indexed payer,
         address indexed receiver,
         address token,
+        uint256 amount,
+        uint256 timestamp
+    );
+
+    // Events for dynamic payments
+    event DynamicEthPaid(
+        address indexed receiver,
+        address indexed payer,
+        uint256 amount,
+        uint256 timestamp
+    );
+
+    event DynamicErc20Paid(
+        address indexed receiver,
+        address indexed payer,
+        address indexed token,
         uint256 amount,
         uint256 timestamp
     );
@@ -263,6 +374,29 @@ contract Ezpay is ReentrancyGuard {
         return signer == auth.authorizer && 
                auth.chainId == block.chainid && 
                auth.contractAddress == address(this);
+    }
+
+    /**
+     * @dev Verify merchant-signed dynamic payment authorization.
+     * Message: keccak256(abi.encode(receiver, token, chainId, contractAddress)) with EIP-191 prefix.
+     */
+    function _verifyPayAuthorization(PayAuthorization calldata auth) internal view returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n32",
+                keccak256(
+                    abi.encode(
+                        auth.receiver,
+                        auth.token,
+                        auth.chainId,
+                        auth.contractAddress
+                    )
+                )
+            )
+        );
+
+        address signer = _recoverSigner(messageHash, auth.signature);
+        return signer == auth.receiver && auth.chainId == block.chainid && auth.contractAddress == address(this);
     }
 
     /**
