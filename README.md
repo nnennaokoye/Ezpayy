@@ -52,7 +52,7 @@ npm run test
 - Gasless API: `frontend/app/api/gasless-payment/route.ts` (uses SPONSOR_PK)
 - Network config and addresses: `frontend/lib/contract.ts`
 
-## Quick Guide (5 steps)
+## Quick Guide 
 1) Open merchant dashboard: run web app, go to `/merchant`.
 2) Create request: choose token (MNT/USDC/USDT/WETH), set optional amount/description, generate QR/link.
 3) Share: customer scans QR or opens the link (it encodes receiver, token, chainId, contract, and signature).
