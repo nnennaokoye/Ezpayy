@@ -33,7 +33,7 @@ export function Features() {
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">EzPay</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Experience the future of crypto payments with cutting-edge technology that makes transactions effortless
+            Experience the future of crypto payments with cutting edge technology that makes transactions effortless
           </p>
         </div>
 
