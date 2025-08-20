@@ -1,7 +1,61 @@
 // Ezpay Contract Configuration
-export const EZPAY_CONTRACT_ADDRESS = "0x3E4A71CA71964AF2C0c035fFa62bd985569A8De2" as const;
+export const EZPAY_CONTRACT_ADDRESS = "0x407faeC3bFF9192Ef9a48444b8E1155950fD4c5C" as const;
 
 export const EZPAY_ABI = [
+  {
+    "type": "function",
+    "name": "payDynamicETH",
+    "inputs": [
+      {
+        "name": "auth",
+        "type": "tuple",
+        "internalType": "struct Ezpay.PayAuthorization",
+        "components": [
+          { "name": "receiver", "type": "address", "internalType": "address" },
+          { "name": "token", "type": "address", "internalType": "address" },
+          { "name": "chainId", "type": "uint256", "internalType": "uint256" },
+          { "name": "contractAddress", "type": "address", "internalType": "address" },
+          { "name": "signature", "type": "bytes", "internalType": "bytes" }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "payDynamicERC20WithPermit",
+    "inputs": [
+      {
+        "name": "auth",
+        "type": "tuple",
+        "internalType": "struct Ezpay.PayAuthorization",
+        "components": [
+          { "name": "receiver", "type": "address", "internalType": "address" },
+          { "name": "token", "type": "address", "internalType": "address" },
+          { "name": "chainId", "type": "uint256", "internalType": "uint256" },
+          { "name": "contractAddress", "type": "address", "internalType": "address" },
+          { "name": "signature", "type": "bytes", "internalType": "bytes" }
+        ]
+      },
+      {
+        "name": "permit",
+        "type": "tuple",
+        "internalType": "struct Ezpay.PermitData",
+        "components": [
+          { "name": "owner", "type": "address", "internalType": "address" },
+          { "name": "token", "type": "address", "internalType": "address" },
+          { "name": "value", "type": "uint256", "internalType": "uint256" },
+          { "name": "deadline", "type": "uint256", "internalType": "uint256" },
+          { "name": "v", "type": "uint8", "internalType": "uint8" },
+          { "name": "r", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "s", "type": "bytes32", "internalType": "bytes32" }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
   {
     "type": "constructor",
     "inputs": [],
@@ -479,7 +533,6 @@ export const EZPAY_ABI = [
 export const MANTLE_SEPOLIA = {
   id: 5003,
   name: 'Mantle Sepolia Testnet',
-  network: 'mantle-sepolia',
   nativeCurrency: {
     decimals: 18,
     name: 'MNT',
@@ -497,6 +550,7 @@ export const MANTLE_SEPOLIA = {
 // Token addresses on Mantle Sepolia
 export const TOKENS = {
   MNT: '0x0000000000000000000000000000000000000000', // Native token
-  USDC: '0x', // Add USDC address when available
-  WETH: '0x', // Add WETH address when available
+  USDC: '0xC46ba842bAD10aAeB501667A80D39EE09BB62A7d', // MockUSDC
+  USDT: '0x9c5C8F3ad18b8D1D32Ea803Aa09A6beA077e9471', // MockUSDT 
+  WETH: '0xAC8F7169CE823c86b3411dCD36576dA3f1B82710', // MockWETH
 } as const;

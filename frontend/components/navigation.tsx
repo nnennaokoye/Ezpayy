@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Zap } from "lucide-react"
 import Link from "next/link"
+import { WalletConnect } from "@/components/wallet-connect"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,12 +25,7 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            
-            <Link href="">
-              <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-200">
-                Connect Wallet
-              </Button>
-            </Link>
+            <WalletConnect />
           </div>
 
           {/* Mobile menu button */}
@@ -58,9 +54,7 @@ export function Navigation() {
                 For Merchants
               </Link>
               <div className="px-3 py-2">
-                <Link href="" className="block">
-                  <Button className="w-full bg-gradient-to-r from-primary to-secondary">Connect Wallet</Button>
-                </Link>
+                <WalletConnect />
               </div>
             </div>
           </div>
