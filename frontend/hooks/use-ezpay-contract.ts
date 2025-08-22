@@ -12,6 +12,42 @@ export type PayAuthorization = {
   signature: `0x${string}`
 }
 
+// Hook to read expiry window from contract (BILL_EXPIRY_SECONDS)
+export function useExpiryWindow() {
+  return useReadContract({
+    address: EZPAY_CONTRACT_ADDRESS,
+    abi: EZPAY_ABI,
+    functionName: 'BILL_EXPIRY_SECONDS',
+  })
+}
+
+// Hook to compute bill status: expired, secondsRemaining, canPay
+export function useBillComputedStatus(billId: string) {
+  const billQuery = useBillDetails(billId)
+  const expiryQuery = useExpiryWindow()
+
+  const bill = billQuery.data as any
+  const expirySec = expiryQuery.data as bigint | undefined
+
+  if (!bill || !expirySec) {
+    return {
+      loading: billQuery.isLoading || expiryQuery.isLoading,
+      expired: undefined as boolean | undefined,
+      secondsRemaining: undefined as number | undefined,
+      canPay: undefined as boolean | undefined,
+    }
+  }
+
+  const nowSec = Math.floor(Date.now() / 1000)
+  const createdAt = Number(bill.createdAt ?? 0)
+  const deadline = createdAt + Number(expirySec)
+  const expired = !bill.paid && !bill.canceled && deadline <= nowSec
+  const secondsRemaining = bill.paid || bill.canceled ? 0 : Math.max(0, deadline - nowSec)
+  const canPay = !bill.paid && !bill.canceled && !expired
+
+  return { loading: false, expired, secondsRemaining, canPay }
+}
+
 export function useEzpayContract() {
   const { writeContract, data: hash, error, isPending } = useWriteContract()
 
