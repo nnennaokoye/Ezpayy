@@ -33,9 +33,9 @@ Create and receive QR-based payments on Mantle Sepolia with gasless ERC‑20 sup
 - Explorer: https://explorer.sepolia.mantle.xyz
 - Ezpay: 0xc0C6F54f2256D2ED46aBdB84053Fa0cF549Bb8a4
 - Tokens:
-  USDC 0xC46ba842bAD10aAeB501667A80D39EE09BB62A7d
-  USDT 0x9c5C8F3ad18b8D1D32Ea803Aa09A6beA077e9471
-  WETH 0xAC8F7169CE823c86b3411dCD36576dA3f1B82710
+  USDC: 0xC46ba842bAD10aAeB501667A80D39EE09BB62A7d
+  USDT: 0x9c5C8F3ad18b8D1D32Ea803Aa09A6beA077e9471
+  WETH: 0xAC8F7169CE823c86b3411dCD36576dA3f1B82710
 
 ## Notes
 - Gasless ERC‑20 uses EIP‑2612 Permit + a server relayer at `frontend/app/api/gasless-payment/route.ts` (sponsor pays gas).
