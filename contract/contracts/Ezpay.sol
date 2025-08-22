@@ -4,6 +4,12 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+// Minimal Chainlink Automation interface
+interface AutomationCompatibleInterface {
+    function checkUpkeep(bytes calldata checkData) external view returns (bool upkeepNeeded, bytes memory performData);
+    function performUpkeep(bytes calldata performData) external;
+}
+
 /// @dev Minimal ERC20 Permit interface (EIP-2612)
 interface IERC20Permit {
     function permit(
@@ -20,15 +26,15 @@ interface IERC20Permit {
 /**
  * @title Ezpay
  * @dev Smart contract for creating and paying bills via payment links
- * Supports EIP-7702 for gasless transactions
  * @author Ezpay Team
  */
-contract Ezpay is ReentrancyGuard {
+contract Ezpay is ReentrancyGuard, AutomationCompatibleInterface {
     struct Bill {
         address receiver;
         address token; // address(0) for ETH
         uint256 amount;
         bool paid;
+        bool canceled;
         uint256 createdAt;
         uint256 paidAt;
         address payer;
@@ -131,6 +137,8 @@ contract Ezpay is ReentrancyGuard {
     
     uint256 public totalBills;
     uint256 public totalPaidBills;
+    // Default expiration window for unpaid bills: 72 hours (3 days)
+    uint256 public constant BILL_EXPIRY_SECONDS = 72 hours;
     
     event BillCreated(
         bytes32 indexed billId,
@@ -146,6 +154,12 @@ contract Ezpay is ReentrancyGuard {
         address indexed receiver,
         address token,
         uint256 amount,
+        uint256 timestamp
+    );
+
+    event BillExpired(
+        bytes32 indexed billId,
+        address indexed receiver,
         uint256 timestamp
     );
 
@@ -199,6 +213,7 @@ contract Ezpay is ReentrancyGuard {
             token: token,
             amount: amount,
             paid: false,
+            canceled: false,
             createdAt: block.timestamp,
             paidAt: 0,
             payer: address(0)
@@ -219,8 +234,7 @@ contract Ezpay is ReentrancyGuard {
     }
 
     /**
-     * @dev Pay a bill using EIP-7702 authorization
-     * This allows a sponsor to pay gas fees while the actual payment comes from the authorizer
+     * This allows a sponsor/relayer to pay gas fees while the actual payment comes from the authorizer
      * @param authorization The authorization struct containing signature and details
      */
     function payBillWithAuthorization(
@@ -245,6 +259,7 @@ contract Ezpay is ReentrancyGuard {
         if (bill.receiver == address(0)) {
             revert BillNotFound();
         }
+        require(!bill.canceled, "Bill canceled");
         if (bill.paid) {
             revert BillAlreadyPaid();
         }
@@ -302,6 +317,7 @@ contract Ezpay is ReentrancyGuard {
         if (bill.receiver == address(0)) {
             revert BillNotFound();
         }
+        require(!bill.canceled, "Bill canceled");
         if (bill.paid) {
             revert BillAlreadyPaid();
         }
@@ -349,7 +365,69 @@ contract Ezpay is ReentrancyGuard {
     }
 
     /**
-     * @dev Verify EIP-7702 style authorization
+     * @dev Expire old unpaid bills for a receiver. Intended to be called by Chainlink Automation.
+     * Iterates over the receiver's bills and marks up to `maxToExpire` that are unpaid, not canceled,
+     * and older than BILL_EXPIRY_SECONDS as canceled, emitting BillExpired events.
+     * This function is idempotent and permissionless.
+     */
+    function expireOldBills(address receiver, uint256 maxToExpire) public {
+        require(maxToExpire > 0, "maxToExpire=0");
+        bytes32[] storage list = userBills[receiver];
+        uint256 len = list.length;
+        uint256 expired;
+        for (uint256 i = 0; i < len && expired < maxToExpire; i++) {
+            bytes32 billId = list[i];
+            Bill storage bill = bills[billId];
+            if (
+                bill.receiver == receiver &&
+                !bill.paid &&
+                !bill.canceled &&
+                bill.createdAt + BILL_EXPIRY_SECONDS <= block.timestamp
+            ) {
+                bill.canceled = true;
+                emit BillExpired(billId, receiver, block.timestamp);
+                expired++;
+            }
+        }
+    }
+
+    /**
+     * @dev Chainlink Automation check to determine if upkeep is needed.
+     * checkData should be abi.encode(address receiver, uint256 maxToExpire)
+     */
+    function checkUpkeep(bytes calldata checkData) external view returns (bool upkeepNeeded, bytes memory performData) {
+        (address receiver, uint256 maxToExpire) = abi.decode(checkData, (address, uint256));
+        if (receiver == address(0) || maxToExpire == 0) {
+            return (false, bytes(""));
+        }
+        bytes32[] storage list = userBills[receiver];
+        uint256 len = list.length;
+        for (uint256 i = 0; i < len; i++) {
+            Bill storage bill = bills[list[i]];
+            if (
+                bill.receiver == receiver &&
+                !bill.paid &&
+                !bill.canceled &&
+                bill.createdAt + BILL_EXPIRY_SECONDS <= block.timestamp
+            ) {
+                // At least one expired candidate exists
+                return (true, checkData);
+            }
+        }
+        return (false, bytes(""));
+    }
+
+    /**
+     * @dev Chainlink Automation perform to execute expiration in batches.
+     * performData should be abi.encode(address receiver, uint256 maxToExpire)
+     */
+    function performUpkeep(bytes calldata performData) external {
+        (address receiver, uint256 maxToExpire) = abi.decode(performData, (address, uint256));
+        expireOldBills(receiver, maxToExpire);
+    }
+
+    /**
+     * @dev Verify signed authorization
      */
     function _verifyAuthorization(Authorization calldata auth) internal view returns (bool) {
         // Create the message hash that was signed

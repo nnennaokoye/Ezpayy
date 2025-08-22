@@ -25,7 +25,7 @@ import Link from "next/link"
 
 export default function PayPage() {
   const { address, isConnected } = useAccount()
-  const { payBill, payDynamicETH, isPending, isConfirming, isConfirmed, error } = useEzpayContract()
+  const { payBill, payDynamicETH, isPending, isConfirming, isConfirmed, error, hash } = useEzpayContract()
   
   const [paymentLink, setPaymentLink] = useState("")
   const [copiedLink, setCopiedLink] = useState(false)
@@ -358,6 +358,24 @@ export default function PayPage() {
       setIsComplete(true)
     }
   }, [isConfirmed])
+
+  // Stop spinner and surface error if write/confirm errors
+  useEffect(() => {
+    if (error) {
+      setIsProcessing(false)
+      setUiError(typeof (error as any)?.message === 'string' ? (error as any).message : 'Transaction failed')
+    }
+  }, [error])
+
+  // If confirmation finished without success (e.g., reverted/dropped), stop spinner
+  useEffect(() => {
+    // Only act for attempts that produced a tx hash
+    if (!hash) return
+    if (!isConfirming && !isConfirmed && isProcessing) {
+      setIsProcessing(false)
+      setUiError((prev) => prev || 'Transaction failed or was dropped')
+    }
+  }, [isConfirming, isConfirmed, hash, isProcessing])
 
   if (isComplete) {
     return (

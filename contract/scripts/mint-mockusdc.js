@@ -66,11 +66,11 @@ async function main() {
       }
     }
     
-    // Small delay to avoid overwhelming the network
+    
     await new Promise(resolve => setTimeout(resolve, 1000))
   }
 
-  console.log('✅ Minting complete')
+  console.log(' Minting complete')
 }
 
 main().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1); });

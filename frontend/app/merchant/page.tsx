@@ -12,6 +12,8 @@ import { QrCode, Copy, Link2, Zap, ArrowLeft, History, FileText, Wallet, Share2,
 import { Navigation } from "@/components/navigation"
 import { WalletConnect } from "@/components/wallet-connect"
 import { TOKENS, EZPAY_CONTRACT_ADDRESS, MANTLE_SEPOLIA } from "@/lib/contract"
+import { useExpiryWindow } from "@/hooks/use-ezpay-contract"
+import { formatDuration } from "@/lib/utils"
 import { encodeAbiParameters, keccak256, createPublicClient, http, parseAbiItem, formatUnits } from "viem"
 import Link from "next/link"
 import QRCode from "react-qr-code"
@@ -31,10 +33,13 @@ export default function MerchantPage() {
   const [copied, setCopied] = useState(false)
   const [copiedId, setCopiedId] = useState<number | null>(null)
 
-  type CreatedPayment = { id: number; amount: string; token: string; description: string; link: string; created: string; status: string }
+  type CreatedPayment = { id: number; amount: string; token: string; description: string; link: string; created: string; status: string; createdAtSec?: number }
   const [createdPayments, setCreatedPayments] = useState<CreatedPayment[]>([])
   const [transactionHistory, setTransactionHistory] = useState<any[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
+  // ticker to update countdowns on Created tab
+  const [nowSec, setNowSec] = useState(Math.floor(Date.now() / 1000))
+  const { data: expiryWindow } = useExpiryWindow()
 
   // viem public client for reading chain logs
   const publicClient = useMemo(() => {
@@ -60,9 +65,9 @@ export default function MerchantPage() {
     try {
       setLoadingHistory(true)
       const latest = await publicClient.getBlockNumber()
-      // Limit lookback to avoid RPC 400/context canceled on giant ranges
-      const maxLookback = BigInt(200000)
-      const step = BigInt(20000)
+      // Mantle RPC limits eth_getLogs to 10,000 block ranges; stay safely below
+      const maxLookback = BigInt(90000)
+      const step = BigInt(9000)
       const startBlock = latest > maxLookback ? latest - maxLookback : BigInt(0)
 
       let erc20Logs: any[] = []
@@ -205,6 +210,13 @@ export default function MerchantPage() {
     }
   }, [isConnected, address])
 
+  // Tick every second only when Created tab is active
+  useEffect(() => {
+    if (activeTab !== 'created') return
+    const t = setInterval(() => setNowSec(Math.floor(Date.now() / 1000)), 1000)
+    return () => clearInterval(t)
+  }, [activeTab])
+
   // Real-time subscription for new events on History tab
   useEffect(() => {
     if (!isConnected || !address || activeTab !== 'history') return
@@ -334,7 +346,7 @@ export default function MerchantPage() {
   const generatePayment = async () => {
     if (!token || !isConnected || !address) return
     try {
-      const tokenAddress = token === 'USDC' ? TOKENS.USDC : token === 'USDT' ? TOKENS.USDT : TOKENS.WETH
+      const tokenAddress = token === 'USDC' ? TOKENS.USDC : token === 'USDT' ? TOKENS.USDT : token === 'MNT' ? TOKENS.MNT : TOKENS.WETH
       const selectedChainId = chainId ?? MANTLE_SEPOLIA.id
 
       // Build EIP-191 signed auth: keccak256(abi.encode(receiver, token, chainId, contractAddress))
@@ -357,14 +369,16 @@ export default function MerchantPage() {
 
       // persist created payment
       try {
+        const nowMs = Date.now()
         const entry: CreatedPayment = {
-          id: Date.now(),
+          id: nowMs,
           amount: amount || "",
           token,
           description,
           link,
-          created: new Date().toLocaleString(),
+          created: new Date(nowMs).toLocaleString(),
           status: "Active",
+          createdAtSec: Math.floor(nowMs / 1000),
         }
         const arr: CreatedPayment[] = JSON.parse(localStorage.getItem('createdPayments') || '[]')
         arr.unshift(entry)
@@ -641,7 +655,15 @@ export default function MerchantPage() {
                     {createdPayments.length === 0 && (
                       <p className="text-muted-foreground">No created codes yet. Generate a payment to see it here.</p>
                     )}
-                    {createdPayments.map((payment) => (
+                    {createdPayments.map((payment) => {
+                      // derive seconds remaining using robust numeric timestamp
+                      const createdTs = payment.createdAtSec ?? Math.floor((payment.id || 0) / 1000)
+                      const exp = Number(expiryWindow ?? 0n)
+                      const secondsElapsed = nowSec - createdTs
+                      const secondsRemaining = exp > 0 && createdTs > 0 ? Math.max(0, exp - Math.max(0, secondsElapsed)) : undefined
+                      const isExpired = secondsRemaining !== undefined && secondsRemaining === 0
+
+                      return (
                       <div key={payment.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                         <div className="flex justify-between items-start mb-3">
                           <div>
@@ -651,15 +673,26 @@ export default function MerchantPage() {
                             <p className="text-muted-foreground">{payment.description}</p>
                           </div>
                           <div className="text-right">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                payment.status === "Active"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-blue-100 text-blue-800"
-                              }`}
-                            >
-                              {payment.status}
-                            </span>
+                            <div className="flex items-center gap-2 justify-end">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  payment.status === "Active"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-blue-100 text-blue-800"
+                                }`}
+                              >
+                                {payment.status}
+                              </span>
+                              {secondsRemaining !== undefined && (
+                                isExpired ? (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Expired</span>
+                                ) : (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Expires in {formatDuration(secondsRemaining)}
+                                  </span>
+                                )
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground mt-1">{payment.created}</p>
                           </div>
                         </div>
@@ -679,7 +712,8 @@ export default function MerchantPage() {
                           </Button>
                         </div>
                       </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </CardContent>
               </Card>
