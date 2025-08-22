@@ -5,13 +5,13 @@ const steps = [
   {
     icon: QrCode,
     title: "Merchant Generates QR",
-    description: "Merchant creates a payment QR code or link with the amount and token (MNT, USDC, WETH)",
+    description: "Merchant creates a payment QR code or link with the amount and token (USDC, USDT, WETH)",
     step: "01",
   },
   {
     icon: Smartphone,
     title: "Customer Scans & Pays",
-    description: "Customer scans the QR code with their phone and confirms the payment in seconds",
+    description: "Customer scans the QR code and confirms the payment in seconds",
     step: "02",
   },
   {

@@ -5,7 +5,7 @@ const features = [
   {
     icon: Zap,
     title: "Gasless Transactions",
-    description: "EzPay sponsors all gas fees using ERC-4337 account abstraction. Pay with crypto without holding MNT.",
+    description: "EzPay covers all gas fees, so you can pay with crypto seamlessly.",
     color: "from-primary to-primary/60",
   },
   {
@@ -33,7 +33,7 @@ export function Features() {
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">EzPay</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Experience the future of crypto payments with cutting edge technology that makes transactions effortless
+            Experience the future of crypto payments with cutting-edge technology that makes transactions effortless
           </p>
         </div>
 
