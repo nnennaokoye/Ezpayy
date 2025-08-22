@@ -1,4 +1,4 @@
-# Ezpay – Mantle L2 Payment dApp
+# Ezpay – Mantle Payment dApp
 
 Create and receive QR-based payments on Mantle Sepolia with gasless ERC‑20 support.
 
